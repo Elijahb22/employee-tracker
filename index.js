@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const consolet = require('console.table');
 const db = require('./db/connection');
+const { connect } = require('./db/connection');
 
 // initalize the app
 db.connect(function (err) {
@@ -10,4 +11,9 @@ db.connect(function (err) {
     init();
 });
 
+function viewAllEmployees() {
+    db.query(
+        `SELECT CONCAT()`
+    )
+}
 
