@@ -74,12 +74,23 @@ function addEmployee() {
                 [firstName, lastName, roles, manager],
                 (err, data) => {
                   if (err) throw err;
-                  console.log("Employee has been added!");
+                  console.log("Employee was added!");
                   init();
                 }
               );
             });
         });
     });
+}
+function init(){
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "userMenu",
+                message: "What would you like to do?",
+                choices: ["View All Employees", "Add Employee", "Update Employee's Role & Manager", "View All Roles", "Add Role", "View All Departments", "Add Department", new inquirer.Separator(), "Quit", new inquirer.Separator()]
+            }
+        ])
 }
 
