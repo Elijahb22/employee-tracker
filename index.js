@@ -15,7 +15,7 @@ const connection = mysql.createConnection(
 );
 // initalize the app
 connection.connect(function (err) {
-    if (err) throw err
+    if (err) throw err;
     console.log(`Employee Tracker`);
     init();
 });
@@ -152,5 +152,20 @@ function init(){
                 choices: ["View All Employees", "Add Employee", "Update Employee's Role & Manager", "View All Roles", "Add Role", "View All Departments", "Add Department", new inquirer.Separator(), "Quit", new inquirer.Separator()]
             }
         ])
+
+        .then(({ userMenu }) => {
+            switch (userMenu) {
+                case "View All Employees":
+                    viewAllEmployees();
+                    break;
+                case "Add Employee":
+                    addEmployee();
+                    break;
+                case "Update Employee's Role & Manager":
+                    updateEmployeeRole()
+                    break;
+            }
+        })
+    
 }
 
