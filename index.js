@@ -1,19 +1,27 @@
 const inquirer = require('inquirer');
-const mysql = require('mysql2');
-const consolet = require('console.table');
-const db = require('./db/connection');
-const { connect } = require('./db/connection');
-const { left } = require('inquirer/lib/utils/readline');
+const consoleT= require('console.table');
+const mysql = require('mysql2')
 
+const connection = mysql.createConnection(
+    {
+      host: 'localhost',
+      // Your MySQL username,
+      user: 'root',
+      // Your MySQL password
+      password: 'calofduty1)',
+      database: 'employee-tracker'
+    },
+    console.log('Connected to employee-tracker database')
+);
 // initalize the app
-db.connect(function (err) {
-    if (err) throw err;
+connection.connect(function (err) {
+    if (err) throw err
     console.log(`Employee Tracker`);
     init();
 });
 // Views all the employess 
 function viewAllEmployees() {
-    db.query(
+    connection.query(
         `SELECT CONCAT(e.first_name, e.last_name) AS 'Employee Name', rs.title AS 'Role', rs.salart AS 'Salary', IFNULL(CONCAT(m.first_name, m.last_name), 'N/A') as 'Manager Name'
         FROM employee e 
         LEFT JOIN employee m ON e.manager_id = m.manager_id
@@ -27,13 +35,13 @@ function viewAllEmployees() {
 };
 // Adds an employee
 function addEmployee() {
-    db.query(`SELECT * FROM roles;`, (err, data) => {
+    connection.query(`SELECT * FROM roles;`, (err, data) => {
         if (err) throw err;
         const rolesArray = data.map((roles) => {
           return { name: roles.title, value: roles.id };
         });
         
-        db.query(`SELECT * FROM employee;`, (err, data) => {
+        connection.query(`SELECT * FROM employee;`, (err, data) => {
           if (err) throw err;
           const employeeArray = data.map((employee) => {
             return { name: `${employee.first_name} ${employee.last_name}`, value: employee.id };
@@ -82,6 +90,58 @@ function addEmployee() {
         });
     });
 }
+// Update an employees' role
+function updateEmployeeRole() {
+    connection.query(`SELECT * FROM roles;`, (err, data) => {
+      if (err) throw err;
+      const rolesArray = data.map((role) => {
+        return { name: role.title, value: role.id };
+      });
+  
+      connection.query(`SELECT * FROM employee;`, (err, data) => {
+        if (err) throw err;
+        const employeeArray = data.map((employee) => {
+          return { name: `${employee.first_name} ${employee.last_name}`, value: employee.id };
+        });
+  
+        const noneOption = { name: "None", value: null };
+        const managerArray = employeeArray.concat(noneOption);
+  
+        inquirer
+          .prompt([
+            {
+              type: "list",
+              message: "Which employee would you like to update?",
+              name: "employee",
+              choices: employeeArray
+            },
+            {
+              type: "list",
+              message: "Which role would you like to assign the employee?",
+              name: "roles",
+              choices: rolesArray
+            },
+            {
+              type: "list",
+              message: "Please select the employee's new manager",
+              choices: managerArray,
+              name: "manager"
+            }
+          ])
+          .then(({ employee, role, manager }) => {
+            connection.query(
+           `UPDATE employee
+            SET roles_id = ?, manager_id = ?
+            WHERE id = ?;`, 
+            [role, manager, employee], (err, data) => {
+              if (err) throw err;
+              console.log("Employee's roles has been updated!");
+              init();
+            });
+          });
+      });
+    });
+  };
 function init(){
     inquirer
         .prompt([
