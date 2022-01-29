@@ -64,9 +64,9 @@ function addEmployee() {
               },
               {
                 type: "list",
-                message: "Please select the employee's role",
+                message: "Please select the employee's roles",
                 choices: rolesArray,
-                name: "role"
+                name: "roles"
               },
               {
                 type: "list",
@@ -141,7 +141,21 @@ function updateEmployeeRole() {
           });
       });
     });
-  };
+};
+// View all roles
+function viewRoles() {
+    connection.query(
+   `SELECT r.id, r.title, r.salary, d.name as 'Department'
+    FROM role r
+    LEFT JOIN department d
+        on r.department_id = d.id;`,
+      (err, data) => {
+      if (err) throw err;
+      console.table(data);
+      init();
+    });
+};
+  
 function init(){
     inquirer
         .prompt([
