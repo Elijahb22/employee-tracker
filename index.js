@@ -195,7 +195,36 @@ function addRole() {
       });
   });
 };
+// View all departments
+function viewDepartments() {
+  connection.query(`SELECT * FROM department;`, (err, data) => {
+    if (err) throw err;
+    console.table(data);
+    init();
+  });
+};
 
+// Add a department
+function addDepartment() {
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Please enter the name of the department.",
+        name: "department"
+      },
+    ])
+    .then(({ department }) => {
+      connection.query(
+        `INSERT INTO department (name)
+         VALUE (?);`,
+        [department], (err, data) => {
+        if (err) throw err;
+        console.log("Your department has been created.");
+        init();
+      });
+    });
+};
 function init(){
     inquirer
         .prompt([
@@ -224,6 +253,12 @@ function init(){
                 case "Add Roles":
                     addRole();
                     break;
+                case "View Departments":
+                    viewDepartments();
+                    break;
+                case "Add departments":
+                    addDepartment();
+                    break
             }
         })
     init();
