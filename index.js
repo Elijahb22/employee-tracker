@@ -22,7 +22,7 @@ connection.connect(function (err) {
 //view all employees
 function viewAllEmployees() {
   connection.query(
- `SELECT CONCAT(e.first_name, e.last_name) AS 'Employee Name', r.title AS 'Role', r.salary AS 'Salary', IFNULL(CONCAT(m.first_name," ",m.last_name),'N/A') AS 'Manager Name'
+ `SELECT CONCAT(e.first_name, e.last_name) AS 'Employee Name', r.title AS 'Role', r.salary AS 'Salary', IFNULL(CONCAT(m.first_name,m.last_name),'N/A') AS 'Manager Name'
   FROM employee e
   LEFT JOIN employee m ON e.manager_id = m.id
   INNER JOIN role r ON r.id = e.role_id;`,
@@ -82,7 +82,7 @@ connection.query(`SELECT * FROM role;`, (err, data) => {
           [firstName, lastName, role, manager],
           (err, data) => {
             if (err) throw err;
-            console.log("Employee has been added!");
+            console.log("Employee has been added");
             init();
           }
         );
@@ -93,10 +93,10 @@ connection.query(`SELECT * FROM role;`, (err, data) => {
 
 // Update an employees' role
 function updateEmployeeRole() {
-connection.query(`SELECT * FROM role;`, (err, data) => {
-  if (err) throw err;
-  const rolesArray = data.map((role) => {
-    return { name: role.title, value: role.id };
+  connection.query(`SELECT * FROM role;`, (err, data) => {
+    if (err) throw err;
+    const rolesArray = data.map((role) => {
+      return { name: role.title, value: role.id };
   });
 
   connection.query(`SELECT * FROM employee;`, (err, data) => {
@@ -210,29 +210,29 @@ connection.query(`SELECT * FROM department;`, (err, data) => {
 
 // Add a department
 function addDepartment() {
-inquirer
-  .prompt([
-    {
-      type: "input",
-      message: "Please enter the name of the department.",
-      name: "department"
-    },
-  ])
-  .then(({ department }) => {
-    connection.query(
-      `INSERT INTO department (name)
-       VALUE (?);`,
-      [department], (err, data) => {
-      if (err) throw err;
-      console.log("Your department has been created.");
-      init();
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        message: "Please enter the name of the department.",
+        name: "department"
+      },
+    ])
+    .then(({ department }) => {
+      connection.query(
+        `INSERT INTO department (name)
+        VALUE (?);`,
+        [department], (err, data) => {
+        if (err) throw err;
+        console.log("Your department has been created.");
+        init();
+      });
     });
-  });
 };
 
 function quit() {
-console.log("Thank you for using the employee tracker application!");
-connection.end();
+  console.log("Thank you for using the employee tracker application!");
+  connection.end();
 };
 
 // Function to initialize app
