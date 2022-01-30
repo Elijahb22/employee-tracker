@@ -9,9 +9,9 @@ const connection = mysql.createConnection(
       user: 'root',
       // Your MySQL password
       password: 'calofduty1)',
-      database: 'employee-tracker'
+      database: 'employee_tracker'
     },
-    console.log('Connected to employee-tracker database')
+    console.log('Connected to employee_tracker database')
 );
 // initalize the app
 connection.connect(function (err) {
@@ -82,7 +82,7 @@ function addEmployee() {
                 [firstName, lastName, roles, manager],
                 (err, data) => {
                   if (err) throw err;
-                  console.log("Employee was added!");
+                  console.log("Employee was added");
                   init();
                 }
               );
@@ -135,7 +135,7 @@ function updateEmployeeRole() {
             WHERE id = ?;`, 
             [role, manager, employee], (err, data) => {
               if (err) throw err;
-              console.log("Employee's roles has been updated!");
+              console.log("Employee's roles has been updated.");
               init();
             });
           });
@@ -225,6 +225,10 @@ function addDepartment() {
       });
     });
 };
+function quit() {
+  console.log('Thank you for using employee tracker!')
+  connection.end();
+};
 function init(){
     inquirer
         .prompt([
@@ -235,7 +239,6 @@ function init(){
                 choices: ["View All Employees", "Add Employee", "Update Employee's Role & Manager", "View All Roles", "Add Roles", "View All Departments", "Add Department", new inquirer.Separator(), "Quit", new inquirer.Separator()]
             }
         ])
-
         .then(({ userMenu }) => {
             switch (userMenu) {
                 case "View All Employees":
@@ -259,8 +262,11 @@ function init(){
                 case "Add departments":
                     addDepartment();
                     break
-            }
-        })
+                case "Quit":
+                    quit();
+                    break
+            };
+        });
     init();
-}
+};
 
