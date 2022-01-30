@@ -145,17 +145,57 @@ function updateEmployeeRole() {
 // View all roles
 function viewRoles() {
     connection.query(
-   `SELECT r.id, r.title, r.salary, d.name as 'Department'
-    FROM role r
+   `SELECT rs.id, rs.title, rs.salary, d.name as 'Department'
+    FROM roles rs
     LEFT JOIN department d
-        on r.department_id = d.id;`,
+        on rs.department_id = d.id;`,
       (err, data) => {
       if (err) throw err;
       console.table(data);
       init();
     });
 };
-  
+function addRole() {
+  connection.query(`SELECT * FROM department;`, (err, data) => {
+    if (err) throw err;
+    const departmentsArray = data.map((department) => {
+      return { name: department.name, value: department.id };
+    });
+
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "Please enter the role title:",
+          name: "title",
+        },
+        {
+          type: "input",
+          message: "Please enter the role salary:",
+          name: "salary",
+        },
+        {
+          type: "list",
+          choices: departmentsArray,
+          message: "Please select a department:",
+          name: "department_id"
+        }
+      ])
+      .then(({ title, salary, department_id }) => {
+        connection.query(
+            `INSERT INTO roles (title, salary, department_id)
+            VALUE (?, ?, ?);`,
+            [title, salary, department_id],
+            (err, data) => {
+                if (err) throw err;
+                console.log("Your roles has been created.");
+                init();
+            }
+        );
+      });
+  });
+};
+
 function init(){
     inquirer
         .prompt([
@@ -163,7 +203,7 @@ function init(){
                 type: "list",
                 name: "userMenu",
                 message: "What would you like to do?",
-                choices: ["View All Employees", "Add Employee", "Update Employee's Role & Manager", "View All Roles", "Add Role", "View All Departments", "Add Department", new inquirer.Separator(), "Quit", new inquirer.Separator()]
+                choices: ["View All Employees", "Add Employee", "Update Employee's Role & Manager", "View All Roles", "Add Roles", "View All Departments", "Add Department", new inquirer.Separator(), "Quit", new inquirer.Separator()]
             }
         ])
 
@@ -178,8 +218,14 @@ function init(){
                 case "Update Employee's Role & Manager":
                     updateEmployeeRole()
                     break;
+                case "View All Roles":
+                    viewRoles();
+                    break;
+                case "Add Roles":
+                    addRole();
+                    break;
             }
         })
-    
+    init();
 }
 
