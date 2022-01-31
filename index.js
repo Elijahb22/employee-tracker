@@ -22,7 +22,7 @@ connection.connect(function (err) {
 //view all employees
 function viewAllEmployees() {
   connection.query(
- `SELECT CONCAT(e.first_name, e.last_name) AS 'Employee Name', r.title AS 'Role', r.salary AS 'Salary', IFNULL(CONCAT(m.first_name,m.last_name),'N/A') AS 'Manager Name'
+ `SELECT CONCAT(e.first_name," ", e.last_name) AS 'Employee Name', r.title AS 'Role', r.salary AS 'Salary', IFNULL(CONCAT(m.first_name, " ", m.last_name),'N/A') AS 'Manager Name'
   FROM employee e
   LEFT JOIN employee m ON e.manager_id = m.id
   INNER JOIN role r ON r.id = e.role_id;`,
